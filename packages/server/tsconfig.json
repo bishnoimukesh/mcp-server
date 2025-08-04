@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "baseUrl": "./",
+    "jsx": "react-jsx",
+    "paths": {
+      "@mcp/core": ["../core/src"],
+      "@mcp/kit-shadcn": ["../kit-shadcn/src"]
+    }
+  },
+  "include": ["src"]
+}
