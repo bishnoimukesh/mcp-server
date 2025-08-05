@@ -1,12 +1,23 @@
 import { MCPProvider, ComponentData, ComponentMeta } from "@mcp/core";
-import { componentRegistry } from "./registry";
+import { generateComponentRegistry } from "./dynamicRegistry";
 
-export class ShadcnProvider implements MCPProvider {
-  async getComponent(name: string): Promise<ComponentData | null> {
-    return componentRegistry[name] ?? null;
-  }
+let cache: Record<string, ComponentData> | null = null;
 
-  async listComponents(): Promise<ComponentMeta[]> {
-    return Object.values(componentRegistry).map(c => c.metadata);
+async function loadRegistry(): Promise<Record<string, ComponentData>> {
+  if (!cache) {
+    cache = await generateComponentRegistry();
   }
+  return cache;
 }
+
+export const ShadcnProvider: MCPProvider = {
+  async listComponents(): Promise<ComponentMeta[]> {
+    const registry = await loadRegistry();
+    return Object.values(registry).map((comp) => comp.metadata);
+  },
+
+  async getComponent(name: string): Promise<ComponentData | null> {
+    const registry = await loadRegistry();
+    return registry[name] ?? null;
+  }
+};

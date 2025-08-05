@@ -1,17 +1,17 @@
 {
-    "name": "@mcp/kit-shadcn",
-    "version": "0.0.1",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "scripts": {
-      "build": "tsup src/index.ts --dts"
-    },
-    "dependencies": {
-      "@mcp/core": "workspace:*"
-    },
-    "devDependencies": {
-      "tsup": "^7.2.0",
-      "typescript": "^5.2.0"
-    }
+  "name": "@mcp/kit-shadcn",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.tsx --dts"
+  },
+  "dependencies": {
+    "@mcp/core": "workspace:*",
+    "axios": "~1.11.0"
+  },
+  "devDependencies": {
+    "tsup": "^7.2.0",
+    "typescript": "^5.2.0"
   }
-  
+}

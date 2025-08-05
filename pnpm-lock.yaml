@@ -57,6 +57,9 @@ importers:
       '@mcp/core':
         specifier: workspace:*
         version: link:../core
+      axios:
+        specifier: ~1.11.0
+        version: 1.11.0
     devDependencies:
       tsup:
         specifier: ^7.2.0
