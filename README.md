@@ -8,12 +8,27 @@ A comprehensive, pluggable MCP server for accessing reusable UI components from 
 
 ---
 
+## ⚡ Quick Demo
+
+```bash
+# 1. Get any component instantly
+mcp get shadcn button --out Button.tsx
+
+# 2. List all available components  
+mcp list shadcn
+
+# 3. Browse components in your browser
+# Visit: http://localhost:3000
+```
+
+---
+
 ## 🌟 Key Features
 
 - 🧩 **Pluggable Architecture**: Support for multiple UI kit providers (ShadCN, Aceternity, etc.)
 - ⚡ **Dynamic Component Registry**: Real-time component fetching from GitHub repositories
 - 🌐 **REST API Server**: Fast Express.js API with comprehensive endpoints
-- 💻 **CLI Tool**: Developer-friendly command-line interface
+- � **CLI Tool**: Developer-friendly command-line interface
 - 🎨 **Beautiful Demo App**: Next.js showcase with Tailwind CSS styling
 - 📊 **Rich Metadata**: Tags, themes, versions, and component information
 - 🔄 **Live Updates**: Components are fetched fresh from source repositories
@@ -68,7 +83,7 @@ This project uses [pnpm workspaces](https://pnpm.io/workspaces) with a clean mon
 
 ---
 
-## 🚀 Quick Start Guide
+## �🚀 Getting Started (2 Minutes)
 
 ### 📋 Prerequisites
 
@@ -116,6 +131,21 @@ pnpm run dev
 ```
 
 The demo application will be available at: **http://localhost:3000**
+
+### 5️⃣ Use CLI Tool
+
+```bash
+# Build and link the CLI globally
+cd packages/cli
+pnpm run build
+pnpm link --global
+
+# Now use it globally
+mcp list shadcn
+mcp get shadcn button --out Button.tsx
+```
+
+✅ **That's it!** Your MCP server is running.
 
 ---
 
@@ -214,9 +244,7 @@ mcp get shadcn button
 
 # Output:
 # 🧩 button.tsx
-# import * as React from "react"
-# import { Slot } from "@radix-ui/react-slot"
-# // ... full component code
+# import * as React from \"react\"\n# import { Slot } from \"@radix-ui/react-slot\"\n# // ... full component code
 ```
 
 #### Save Component to File
@@ -314,11 +342,153 @@ The demo application showcases the MCP server capabilities with:
 - **Smooth Animations**: Professional transitions and hover effects
 - **Mobile-First**: Responsive design for all devices
 
+
+## � Essential Commands
+
+### Development
+```bash
+# Start everything (run these in separate terminals)
+cd packages/server && pnpm dev     # API server :3001
+cd apps/demo && pnpm dev           # Demo app :3000
+
+# Build packages when you make changes
+cd packages/core && pnpm build
+cd packages/kit-yourkit && pnpm build
+```
+
+### CLI Usage
+```bash
+# Install CLI globally
+cd packages/cli && pnpm build && pnpm link --global
+
+# Use the CLI
+mcp list <kit-name>                # List all components
+mcp get <kit> <component>          # Show component code
+mcp get <kit> <component> --out file.tsx  # Save to file
+
+# Examples
+mcp list shadcn
+mcp get shadcn button
+mcp get shadcn card --out Card.tsx
+```
+
+### API Usage
+```bash
+# List components
+curl http://localhost:3001/shadcn/components
+
+# Get specific component
+curl http://localhost:3001/shadcn/components/button
+
+# Your custom kit
+curl http://localhost:3001/yourkit/components/awesome-button
+```
+
+---
+
+## 🔧 Register Your Kit
+
+Once you've created your kit, register it with the server:
+
+```typescript
+// packages/server/src/providers.ts
+import { ShadcnProvider } from "@mcp/kit-shadcn";
+import { YourKitProvider } from "@mcp/kit-yourkit";  // Add this
+
+export const providers = {
+  shadcn: new ShadcnProvider(),
+  yourkit: new YourKitProvider(),  // Add this line
+};
+```
+
+```json
+// packages/server/package.json - Add dependency
+{
+  "dependencies": {
+    "@mcp/kit-yourkit": "workspace:*"
+  }
+}
+```
+
+Rebuild and restart:
+```bash
+cd packages/server && pnpm build && pnpm dev
+```
+
+---
+
+## 🎯 Real Examples
+
+### Example 1: Bootstrap Components
+```typescript
+// Fetch Bootstrap components from CDN
+async getComponent(name: string) {
+  const url = `https://cdn.example.com/bootstrap/${name}.js`;
+  const code = await fetch(url).then(r => r.text());
+  return { code: { tsx: code }, metadata: { name, version: "5.0.0" } };
+}
+```
+
+### Example 2: Local Component Library
+```typescript
+// Use your existing component folder
+async listComponents() {
+  const files = await fs.readdir('./my-components');
+  return files.map(f => ({ name: f.replace('.tsx', ''), version: '1.0.0' }));
+}
+```
+
+### Example 3: Private GitHub Repo
+```typescript
+// Fetch from private repo (requires token)
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+async getComponent(name: string) {
+  const url = `https://api.github.com/repos/yourorg/components/contents/${name}.tsx`;
+  const response = await fetch(url, {
+    headers: { Authorization: `token ${GITHUB_TOKEN}` }
+  });
+  // ... decode base64 content
+}
+```
+
+---
+
+## � Project Structure (Simple)
+
+```
+mcp-server/
+├── packages/
+│   ├── core/           # Types & interfaces (don't touch)
+│   ├── kit-shadcn/     # Example kit (copy this!)
+│   ├── kit-yourkit/    # Your new kit goes here
+│   ├── server/         # API server (add your kit here)
+│   └── cli/            # Command line tool
+└── apps/
+    └── demo/           # Web UI to browse components
+```
+
 ---
 
 ## 🔌 Adding New Component Kits
 
-### Step 1: Create Kit Package
+### Quick Start Guide (Recommended)
+
+#### Option 1: Copy Existing Kit
+```bash
+# 1. Copy the ShadCN kit as a template
+cp -r packages/kit-shadcn packages/kit-yourkit
+
+# 2. Update package.json
+cd packages/kit-yourkit
+# Change name to "@mcp/kit-yourkit"
+
+# 3. Edit src/provider.ts - replace ShadCN URLs with yours
+# 4. Register in packages/server/src/providers.ts
+```
+
+#### Option 2: Create From Scratch
+
+**Step 1: Create Kit Package**
 
 ```bash
 mkdir packages/kit-yourkit
@@ -326,7 +496,7 @@ cd packages/kit-yourkit
 pnpm init
 ```
 
-### Step 2: Implement Provider
+**Step 2: Implement Provider**
 
 ```typescript
 // packages/kit-yourkit/src/provider.ts
@@ -363,7 +533,7 @@ export class YourKitProvider implements MCPProvider {
 }
 ```
 
-### Step 3: Register Provider
+**Step 3: Register Provider**
 
 ```typescript
 // packages/server/src/providers.ts
@@ -375,7 +545,7 @@ export const providers: Record<string, MCPProvider> = {
 };
 ```
 
-### Step 4: Update Dependencies
+**Step 4: Update Dependencies**
 
 ```json
 // packages/server/package.json
@@ -383,6 +553,52 @@ export const providers: Record<string, MCPProvider> = {
   "dependencies": {
     "@mcp/kit-yourkit": "workspace:*"
   }
+}
+```
+
+#### Option 3: Local File System
+Point to your existing component folder:
+
+```typescript
+// Read from your existing component folder
+async getComponent(name: string) {
+  const filePath = `/path/to/your/components/${name}.tsx`;
+  const code = await fs.readFile(filePath, 'utf8');
+  return { code: { tsx: code }, metadata: {...} };
+}
+```
+
+### Real-World Examples
+
+#### Example 1: Bootstrap Components
+```typescript
+// Fetch Bootstrap components from CDN
+async getComponent(name: string) {
+  const url = `https://cdn.example.com/bootstrap/${name}.js`;
+  const code = await fetch(url).then(r => r.text());
+  return { code: { tsx: code }, metadata: { name, version: "5.0.0" } };
+}
+```
+
+#### Example 2: Local Component Library
+```typescript
+// Use your existing component folder
+async listComponents() {
+  const files = await fs.readdir('./my-components');
+  return files.map(f => ({ name: f.replace('.tsx', ''), version: '1.0.0' }));
+}
+```
+
+#### Example 3: Private GitHub Repo
+```typescript
+// Fetch from private repo (requires token)
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+async getComponent(name: string) {
+  const url = `https://api.github.com/repos/yourorg/components/contents/${name}.tsx`;
+  const response = await fetch(url, {
+    headers: { Authorization: `token ${GITHUB_TOKEN}` }
+  });
+  // ... decode base64 content
 }
 ```
 
