@@ -10,3 +10,5 @@ app.use("/", componentsRoute);
 app.listen(PORT, () => {
   console.log(`🚀 MCP Server running at http://localhost:${PORT}`);
 });
+
+export { providers } from "./providers";
