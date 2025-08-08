@@ -11,8 +11,8 @@
     "baseUrl": "./",
     "jsx": "react-jsx",
     "paths": {
-      "@mcp/core": ["../core/src"],
-      "@mcp/kit-shadcn": ["../kit-shadcn/src"]
+      "@devmukesh/mcp-core": ["../core/src"],
+      "@devmukesh/mcp-kit-shadcn": ["../kit-shadcn/src"]
     }
   },
   "include": ["src"]

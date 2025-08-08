@@ -1,6 +1,6 @@
 {
-  "name": "@mcp/cli",
-  "version": "0.0.1",
+  "name": "@devmukesh/mcp-cli",
+  "version": "0.1.0",
   "type": "module",
   "bin": {
     "mcp": "dist/index.js"

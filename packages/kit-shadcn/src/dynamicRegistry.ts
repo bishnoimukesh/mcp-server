@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ComponentData } from "@mcp/core";
+import { ComponentData } from "@devmukesh/mcp-core";
 
 // ✅ Declare the component file list
 const componentFiles = [

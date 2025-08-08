@@ -1,4 +1,4 @@
-import { MCPProvider, ComponentData, ComponentMeta } from "@mcp/core";
+import { MCPProvider, ComponentData, ComponentMeta } from "@devmukesh/mcp-core";
 import { generateComponentRegistry } from "./dynamicRegistry";
 
 let cache: Record<string, ComponentData> | null = null;

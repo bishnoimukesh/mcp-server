@@ -94,7 +94,7 @@ importers:
 
   packages/kit-shadcn:
     dependencies:
-      '@mcp/core':
+      '@devmukesh/mcp-core':
         specifier: workspace:*
         version: link:../core
       axios:
@@ -110,9 +110,12 @@ importers:
 
   packages/server:
     dependencies:
-      '@mcp/core':
+      '@devmukesh/mcp-core':
         specifier: workspace:*
         version: link:../core
+      '@devmukesh/mcp-kit-shadcn':
+        specifier: workspace:*
+        version: link:../kit-shadcn
       express:
         specifier: ^4.21.2
         version: 4.21.2

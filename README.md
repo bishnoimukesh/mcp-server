@@ -500,7 +500,7 @@ pnpm init
 
 ```typescript
 // packages/kit-yourkit/src/provider.ts
-import { MCPProvider, ComponentData, ComponentMeta } from "@mcp/core";
+import { MCPProvider, ComponentData, ComponentMeta } from "@devmukesh/mcp-core";
 
 export class YourKitProvider implements MCPProvider {
   async listComponents(): Promise<ComponentMeta[]> {

@@ -19,9 +19,10 @@ type Component = {
 export default async function ComponentPage({
   params,
 }: {
-  params: { name: string };
+  params: Promise<{ name: string }>;
 }) {
-  const component: Component | null = await getComponentByName("shadcn", params.name);
+  const resolvedParams = await params;
+  const component: Component | null = await getComponentByName("shadcn", resolvedParams.name);
 
   if (!component) {
     notFound();
