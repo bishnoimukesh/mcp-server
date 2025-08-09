@@ -1,6 +1,6 @@
 # 🧩 MCP Server - Unified Component Provider
 
-A comprehensive, unified package for accessing reusable UI components from multiple design systems like **ShadCN UI**, **Aceternity UI**, and more — via both **REST API** and **CLI tools**.
+A comprehensive, unified package for accessing reusable UI components from multiple design systems like **ShadCN UI**, **Material UI**, and more — via both **REST API** and **CLI tools**.
 
 > 💡 Think of it as an NPM registry, but specifically for ready-to-use UI components — design-system aware, developer-friendly, instantly sharable, and completely vendor-agnostic.
 
@@ -163,7 +163,6 @@ This project uses [pnpm workspaces](https://pnpm.io/workspaces) with a clean mon
 │   │   │   └── layout.tsx
 │   │   ├── libs/mcp.ts            ← API client functions
 │   │   └── package.json
-│   └── 📁 server/                  ← Express.js REST API server (deprecated structure)
 ├── 📁 packages/
 │   ├── 📁 core/                    ← Shared types and interfaces
 │   │   ├── src/
@@ -452,8 +451,6 @@ npm init -y
 # Get commonly used components
 mcp get shadcn button --out src/components/Button.tsx
 mcp get shadcn input --out src/components/Input.tsx  
-mcp get shadcn card --out src/components/Card.tsx
-mcp get shadcn dialog --out src/components/Dialog.tsx
 ```
 
 ---
@@ -585,7 +582,6 @@ class ShadcnProvider implements MCPProvider {
 # Quickly scaffold components for new projects
 mcp get shadcn button --out src/components/ui/Button.tsx
 mcp get shadcn input --out src/components/ui/Input.tsx
-mcp get shadcn dialog --out src/components/ui/Dialog.tsx
 ```
 
 ### For Design Systems
@@ -636,16 +632,6 @@ fetch('http://localhost:3001/shadcn/components/button')
 | `avatar` | User profile pictures | `mcp get shadcn avatar` |
 | `badge` | Small status indicators | `mcp get shadcn badge` |
 | `button` | Interactive buttons | `mcp get shadcn button` |
-| `card` | Content containers | `mcp get shadcn card` |
-| `checkbox` | Checkbox inputs | `mcp get shadcn checkbox` |
-| `dialog` | Modal dialogs | `mcp get shadcn dialog` |
-| `input` | Text input fields | `mcp get shadcn input` |
-| `label` | Form labels | `mcp get shadcn label` |
-| `select` | Dropdown selects | `mcp get shadcn select` |
-| `table` | Data tables | `mcp get shadcn table` |
-| `tabs` | Tabbed interfaces | `mcp get shadcn tabs` |
-| `textarea` | Multi-line text input | `mcp get shadcn textarea` |
-| `toast` | Notification toasts | `mcp get shadcn toast` |
 | ... | *46+ components total* | `mcp list shadcn` |
 
 ---
