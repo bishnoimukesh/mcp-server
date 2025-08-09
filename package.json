@@ -1,22 +1,40 @@
 {
-  "name": "mcp-server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "private": true,
+  "name": "@devmukesh/mcp-server",
+  "version": "0.1.2",
+  "description": "MCP Server - A unified package for Model Context Protocol server with ShadCN components",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "mcp": "dist/cli.mjs"
+  },
+  "private": false,
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
+    "build": "pnpm -r --filter=\"./packages/*\" build && tsup",
+    "dev": "tsx packages/server/src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["mcp", "model-context-protocol", "shadcn", "components", "server"],
+  "author": "devmukesh",
   "license": "ISC",
+  "files": [
+    "dist",
+    "packages/*/dist",
+    "packages/*/src"
+  ],
   "devDependencies": {
     "tsup": "~8.5.0",
     "turbo": "~2.5.5",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "tsx": "^4.6.2"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "axios": "~1.11.0",
+    "chalk": "^5.0.0",
+    "commander": "^9.0.0"
   }
 }

@@ -1,6 +1,6 @@
-# 🧩 Modular Component Provider (MCP) Server
+# 🧩 MCP Server - Unified Component Provider
 
-A comprehensive, pluggable MCP server for accessing reusable UI components from multiple design systems like **ShadCN UI**, **Aceternity UI**, and more — via both **REST API** and **CLI tools**.
+A comprehensive, unified package for accessing reusable UI components from multiple design systems like **ShadCN UI**, **Aceternity UI**, and more — via both **REST API** and **CLI tools**.
 
 > 💡 Think of it as an NPM registry, but specifically for ready-to-use UI components — design-system aware, developer-friendly, instantly sharable, and completely vendor-agnostic.
 
@@ -8,17 +8,59 @@ A comprehensive, pluggable MCP server for accessing reusable UI components from 
 
 ---
 
-## ⚡ Quick Demo
+## 📦 Installation
 
+### Global Installation (Recommended for CLI)
 ```bash
-# 1. Get any component instantly
-mcp get shadcn button --out Button.tsx
+npm install -g @devmukesh/mcp-server
+```
 
-# 2. List all available components  
+### Local Installation (For programmatic usage)
+```bash
+npm install @devmukesh/mcp-server
+```
+
+---
+
+## ⚡ Quick Start
+
+### CLI Usage
+```bash
+# List all available components from ShadCN
 mcp list shadcn
 
-# 3. Browse components in your browser
-# Visit: http://localhost:3000
+# Get a specific component
+mcp get shadcn button
+
+# Save component to file
+mcp get shadcn button --out Button.tsx
+
+# Get component with custom name
+mcp get shadcn button --out CustomButton.tsx
+```
+
+### Server Usage
+```bash
+# Start the MCP server (if using source)
+npm run dev
+
+# Access REST API
+curl http://localhost:3001/shadcn/components
+curl http://localhost:3001/shadcn/components/button
+```
+
+### Programmatic Usage
+```typescript
+import { MCPServer, ShadcnProvider } from '@devmukesh/mcp-server';
+
+// Use the ShadCN provider
+const provider = new ShadcnProvider();
+const components = await provider.listComponents();
+const buttonCode = await provider.getComponent('button');
+
+// Or start the server programmatically
+const server = new MCPServer();
+server.listen(3001);
 ```
 
 ---
@@ -26,9 +68,10 @@ mcp list shadcn
 ## 🌟 Key Features
 
 - 🧩 **Pluggable Architecture**: Support for multiple UI kit providers (ShadCN, Aceternity, etc.)
+- 📦 **Unified Package**: Single installation for CLI, server, and programmatic usage
 - ⚡ **Dynamic Component Registry**: Real-time component fetching from GitHub repositories
 - 🌐 **REST API Server**: Fast Express.js API with comprehensive endpoints
-- � **CLI Tool**: Developer-friendly command-line interface
+- 🖥️ **CLI Tool**: Developer-friendly command-line interface with file output
 - 🎨 **Beautiful Demo App**: Next.js showcase with Tailwind CSS styling
 - 📊 **Rich Metadata**: Tags, themes, versions, and component information
 - 🔄 **Live Updates**: Components are fetched fresh from source repositories
@@ -38,9 +81,77 @@ mcp list shadcn
 
 ---
 
-## 📦 Project Architecture
+## � Available Commands
 
-This project uses [pnpm workspaces](https://pnpm.io/workspaces) with a clean monorepo structure:
+### CLI Commands
+```bash
+# List components from a kit
+mcp list <kit>
+mcp list shadcn
+
+# Get component code
+mcp get <kit> <component>
+mcp get shadcn button
+
+# Save to file
+mcp get <kit> <component> --out <filename>
+mcp get shadcn button --out Button.tsx
+
+# Show help
+mcp --help
+mcp get --help
+```
+
+### REST API Endpoints
+```bash
+# List all components from a kit
+GET /{kit}/components
+
+# Get specific component
+GET /{kit}/components/{name}
+
+# Example endpoints
+GET /shadcn/components
+GET /shadcn/components/button
+GET /shadcn/components/card
+```
+
+---
+
+## 🎯 Supported Component Kits
+
+### ShadCN UI
+- **Package**: Included in `@devmukesh/mcp-server`
+- **Components**: 50+ production-ready components
+- **Source**: [shadcn/ui](https://github.com/shadcn-ui/ui)
+- **Usage**: `mcp list shadcn` | `mcp get shadcn button`
+
+### Coming Soon
+- **Aceternity UI** - Modern animated components
+- **Radix UI** - Low-level UI primitives  
+- **Mantine** - Feature-rich components library
+- **Custom Providers** - Add your own component libraries
+
+### Adding New Providers
+The pluggable architecture makes it easy to add any UI kit:
+
+```bash
+# 1. Create new provider package
+mkdir packages/kit-yourkit
+cd packages/kit-yourkit
+
+# 2. Implement MCPProvider interface
+# 3. Register in server providers
+# 4. Use: mcp list yourkit
+```
+
+💡 **See [🔌 Adding New Component Kits](#-adding-new-component-kits) section below for detailed guide.**
+
+---
+
+## 🏗️ Project Architecture & Folder Structure
+
+This project uses [pnpm workspaces](https://pnpm.io/workspaces) with a clean monorepo structure that supports pluggable UI kit providers:
 
 ```
 📁 mcp-server/
@@ -52,46 +163,94 @@ This project uses [pnpm workspaces](https://pnpm.io/workspaces) with a clean mon
 │   │   │   └── layout.tsx
 │   │   ├── libs/mcp.ts            ← API client functions
 │   │   └── package.json
-│   └── 📁 server/                  ← Express.js REST API server
-│       ├── src/
-│       │   ├── index.ts           ← Server entry point
-│       │   ├── routes/            ← API route handlers
-│       │   └── providers.ts       ← Kit provider registry
-│       └── package.json
+│   └── 📁 server/                  ← Express.js REST API server (deprecated structure)
 ├── 📁 packages/
-│   ├── 📁 cli/                     ← Command-line interface
-│   │   ├── src/index.ts           ← CLI commands and logic
-│   │   └── package.json
 │   ├── 📁 core/                    ← Shared types and interfaces
 │   │   ├── src/
 │   │   │   ├── types.ts           ← Component data structures
-│   │   │   ├── provider.ts        ← Provider interface
+│   │   │   ├── provider.ts        ← MCPProvider interface
 │   │   │   └── index.ts
 │   │   └── package.json
-│   ├── 📁 kit-shadcn/              ← ShadCN UI provider
+│   ├── 📁 kit-shadcn/              ← ShadCN UI provider implementation
 │   │   ├── src/
 │   │   │   ├── provider.ts        ← ShadCN provider implementation
 │   │   │   ├── registry.ts        ← Static component registry
-│   │   │   ├── dynamicRegistry.ts ← GitHub-based registry
 │   │   │   └── index.tsx
 │   │   └── package.json
-│   └── 📁 server/                  ← Server package (Express app)
+│   ├── 📁 server/                  ← Express.js REST API server
+│   │   ├── src/
+│   │   │   ├── index.ts           ← Server entry point
+│   │   │   └── providers.ts       ← Kit provider registry
+│   │   └── package.json
+│   └── 📁 cli/                     ← Command-line interface
+│       ├── src/index.ts           ← CLI commands and logic
+│       └── package.json
+├── 📁 dist/                        ← Compiled unified package
+│   ├── index.js                   ← Main entry point
+│   ├── cli.mjs                    ← CLI executable
+│   └── *.d.ts                     ← TypeScript declarations
+├── 📁 src/                         ← Unified package source
+│   ├── index.ts                   ← Re-exports all packages
+│   └── cli.ts                     ← CLI entry point
 ├── pnpm-workspace.yaml             ← Workspace configuration
 ├── pnpm-lock.yaml
-└── package.json                    ← Root package configuration
+├── tsconfig.json                   ← TypeScript configuration
+├── tsup.config.ts                  ← Build configuration
+└── package.json                    ← Unified package configuration
+```
+
+### Pluggable Provider System
+
+The architecture supports adding new UI kit providers easily:
+
+```typescript
+// 1. Implement the MCPProvider interface
+interface MCPProvider {
+  listComponents(): Promise<ComponentMeta[]>;
+  getComponent(name: string): Promise<ComponentData>;
+}
+
+// 2. Create your provider (e.g., packages/kit-yourkit/)
+class YourKitProvider implements MCPProvider {
+  async listComponents() { /* your implementation */ }
+  async getComponent(name: string) { /* your implementation */ }
+}
+
+// 3. Register in server (packages/server/src/providers.ts)
+export const providers = {
+  shadcn: new ShadcnProvider(),
+  yourkit: new YourKitProvider(),  // Add your provider
+};
+```
+
+### Package Exports
+
+The unified package exports everything from its internal packages:
+
+```typescript
+// Main exports from @devmukesh/mcp-server
+export * from './packages/core/dist/index';      // Types & interfaces
+export * from './packages/kit-shadcn/dist/index'; // ShadCN provider  
+export * from './packages/server/dist/index';     // Express server
+```
+│   ├── index.js          ← Main entry point
+│   ├── cli.mjs           ← CLI executable
+│   └── *.d.ts            ← TypeScript declarations
+└── package.json          ← Unified package configuration
 ```
 
 ---
 
-## �🚀 Getting Started (2 Minutes)
+## 🚀 Development Setup
 
-### 📋 Prerequisites
+If you want to contribute or run from source:
 
+### Prerequisites
 - **Node.js** 18+ 
 - **pnpm** 8+ (recommended package manager)
 - **Git** (for cloning the repository)
 
-### 1️⃣ Installation
+### 1️⃣ Clone and Install
 
 ```bash
 # Clone the repository
@@ -102,25 +261,25 @@ cd mcp-server
 pnpm install
 ```
 
-### 2️⃣ Build All Packages
+### 2️⃣ Build and Start
 
 ```bash
-# Build core packages first
-cd packages/core && pnpm run build
-cd ../kit-shadcn && pnpm run build
-cd ../server && pnpm run build
-cd ../cli && pnpm run build
-```
+# Build all packages
+pnpm build
 
-### 3️⃣ Start the MCP Server
-
-```bash
-# Start the API server
-cd packages/server
-pnpm run dev
+# Start the MCP server
+pnpm dev
 ```
 
 The MCP API will be available at: **http://localhost:3001**
+
+### 3️⃣ Test the CLI
+
+```bash
+# Test CLI commands
+node dist/cli.mjs list shadcn
+node dist/cli.mjs get shadcn button
+```
 
 ### 4️⃣ Launch the Demo App (Optional)
 
@@ -132,20 +291,170 @@ pnpm run dev
 
 The demo application will be available at: **http://localhost:3000**
 
-### 5️⃣ Use CLI Tool
+---
+
+## 🔧 Package Scripts
 
 ```bash
-# Build and link the CLI globally
-cd packages/cli
-pnpm run build
-pnpm link --global
+# Root package commands
+pnpm build          # Build all packages
+pnpm dev            # Start the development server
+pnpm test           # Run tests (when available)
 
-# Now use it globally
-mcp list shadcn
-mcp get shadcn button --out Button.tsx
+# Individual package builds (from root)
+pnpm -r build       # Build all packages recursively
+pnpm -F core build  # Build only core package
 ```
 
-✅ **That's it!** Your MCP server is running.
+---
+
+## 📚 API Reference
+
+### ShadCN Provider
+
+```typescript
+import { ShadcnProvider } from '@devmukesh/mcp-server';
+
+const provider = new ShadcnProvider();
+
+// List all components
+const components = await provider.listComponents();
+// Returns: ComponentData[]
+
+// Get component code
+const buttonCode = await provider.getComponent('button');
+// Returns: ComponentData with code property
+```
+
+### Server Usage
+
+```typescript
+import { MCPServer } from '@devmukesh/mcp-server';
+
+const server = new MCPServer();
+server.listen(3001, () => {
+  console.log('MCP Server running on port 3001');
+});
+```
+
+---
+
+## 🌐 REST API Documentation
+
+### Base URL
+```
+http://localhost:3001
+```
+
+### Available Endpoints
+
+| Method | Endpoint | Description | Response |
+|--------|----------|-------------|----------|
+| `GET` | `/{kit}/components` | List all components for a kit | `ComponentMeta[]` |
+| `GET` | `/{kit}/components/{name}` | Get specific component code | `ComponentData` |
+
+### Examples
+
+#### List ShadCN Components
+```bash
+curl http://localhost:3001/shadcn/components
+```
+
+**Response:**
+```json
+[
+  {
+    "name": "button",
+    "version": "0.1.0",
+    "tags": [],
+    "themes": ["default"]
+  },
+  {
+    "name": "input",
+    "version": "0.1.0", 
+    "tags": [],
+    "themes": ["default"]
+  }
+  // ... 44 more components
+]
+```
+
+#### Get Button Component
+```bash
+curl http://localhost:3001/shadcn/components/button
+```
+
+**Response:**
+```json
+{
+  "code": {
+    "tsx": "import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+// ... full component code",
+    "css": ""
+  },
+  "metadata": {
+    "name": "button",
+    "version": "0.1.0",
+    "tags": [],
+    "themes": ["default"]
+  }
+}
+```
+
+---
+
+## 💻 CLI Usage Examples
+
+### Installation Check
+```bash
+# Verify installation
+mcp --version
+mcp --help
+```
+
+### List Components
+```bash
+# List all components from ShadCN kit
+mcp list shadcn
+```
+
+**Output:**
+```
+accordion  -  0.1.0
+alert      -  0.1.0
+button     -  0.1.0
+card       -  0.1.0
+input      -  0.1.0
+...
+```
+
+### Get Components
+```bash
+# Display component code in terminal
+mcp get shadcn button
+
+# Save component to file
+mcp get shadcn button --out Button.tsx
+mcp get shadcn card --out components/Card.tsx
+
+# Get multiple components
+mcp get shadcn button --out Button.tsx
+mcp get shadcn input --out Input.tsx
+```
+
+### Real-world Examples
+```bash
+# Set up a new React project with ShadCN components
+mkdir my-project && cd my-project
+npm init -y
+
+# Get commonly used components
+mcp get shadcn button --out src/components/Button.tsx
+mcp get shadcn input --out src/components/Input.tsx  
+mcp get shadcn card --out src/components/Card.tsx
+mcp get shadcn dialog --out src/components/Dialog.tsx
+```
 
 ---
 
@@ -212,52 +521,6 @@ curl http://localhost:3001/shadcn/components/button
 
 ---
 
-## 💻 CLI Usage
-
-### Installation
-
-```bash
-# Build and link the CLI globally
-cd packages/cli
-pnpm run build
-pnpm link --global
-```
-
-### Available Commands
-
-#### List Components
-```bash
-# List all components from ShadCN kit
-mcp list shadcn
-
-# Output:
-# accordion  -  0.1.0
-# alert      -  0.1.0  
-# button     -  0.1.0
-# ... (46 total components)
-```
-
-#### Get Component Code
-```bash
-# Display component code in terminal
-mcp get shadcn button
-
-# Output:
-# 🧩 button.tsx
-# import * as React from \"react\"\n# import { Slot } from \"@radix-ui/react-slot\"\n# // ... full component code
-```
-
-#### Save Component to File
-```bash
-# Save component to a file
-mcp get shadcn button --out Button.tsx
-
-# Output:
-# ✅ Saved to Button.tsx
-```
-
----
-
 ## 🧱 Architecture Deep Dive
 
 ### Core Interfaces
@@ -275,6 +538,221 @@ interface ComponentMeta {
 interface ComponentData {
   code: {
     tsx: string;
+    css: string;
+  };
+  metadata: ComponentMeta;
+}
+
+// Provider interface that all kits implement
+interface MCPProvider {
+  listComponents(): Promise<ComponentMeta[]>;
+  getComponent(name: string): Promise<ComponentData>;
+}
+```
+
+### Package Structure
+
+The unified package exports everything from its internal packages:
+
+```typescript
+// Main exports from @devmukesh/mcp-server
+export * from './packages/core/dist/index';      // Types & interfaces
+export * from './packages/kit-shadcn/dist/index'; // ShadCN provider  
+export * from './packages/server/dist/index';     // Express server
+```
+
+### Provider System
+
+```typescript
+// ShadCN Provider Implementation
+class ShadcnProvider implements MCPProvider {
+  async listComponents(): Promise<ComponentMeta[]> {
+    // Fetches from GitHub API or static registry
+  }
+  
+  async getComponent(name: string): Promise<ComponentData> {
+    // Downloads component from shadcn/ui repository
+  }
+}
+```
+
+---
+
+## 🎯 Use Cases
+
+### For React Developers
+```bash
+# Quickly scaffold components for new projects
+mcp get shadcn button --out src/components/ui/Button.tsx
+mcp get shadcn input --out src/components/ui/Input.tsx
+mcp get shadcn dialog --out src/components/ui/Dialog.tsx
+```
+
+### For Design Systems
+```typescript
+// Integrate with existing build tools
+import { ShadcnProvider } from '@devmukesh/mcp-server';
+
+const provider = new ShadcnProvider();
+const components = await provider.listComponents();
+
+// Generate component library automatically
+for (const comp of components) {
+  const data = await provider.getComponent(comp.name);
+  await fs.writeFile(`components/${comp.name}.tsx`, data.code.tsx);
+}
+```
+
+### For Teams
+```bash
+# Share component standards across team
+npm install -g @devmukesh/mcp-server
+
+# Everyone uses the same components
+mcp get shadcn button --out Button.tsx
+```
+
+### For API Integration
+```javascript
+// Use REST API in any language/framework
+fetch('http://localhost:3001/shadcn/components/button')
+  .then(res => res.json())
+  .then(data => {
+    console.log(data.code.tsx); // Component code
+  });
+```
+
+---
+
+## 📖 Component Reference
+
+### Available ShadCN Components
+
+| Component | Description | Usage |
+|-----------|-------------|--------|
+| `accordion` | Collapsible content sections | `mcp get shadcn accordion` |
+| `alert` | Alert notifications | `mcp get shadcn alert` |
+| `alert-dialog` | Modal alert dialogs | `mcp get shadcn alert-dialog` |
+| `avatar` | User profile pictures | `mcp get shadcn avatar` |
+| `badge` | Small status indicators | `mcp get shadcn badge` |
+| `button` | Interactive buttons | `mcp get shadcn button` |
+| `card` | Content containers | `mcp get shadcn card` |
+| `checkbox` | Checkbox inputs | `mcp get shadcn checkbox` |
+| `dialog` | Modal dialogs | `mcp get shadcn dialog` |
+| `input` | Text input fields | `mcp get shadcn input` |
+| `label` | Form labels | `mcp get shadcn label` |
+| `select` | Dropdown selects | `mcp get shadcn select` |
+| `table` | Data tables | `mcp get shadcn table` |
+| `tabs` | Tabbed interfaces | `mcp get shadcn tabs` |
+| `textarea` | Multi-line text input | `mcp get shadcn textarea` |
+| `toast` | Notification toasts | `mcp get shadcn toast` |
+| ... | *46+ components total* | `mcp list shadcn` |
+
+---
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+#### CLI Not Working
+```bash
+# Verify installation
+npm list -g @devmukesh/mcp-server
+
+# Reinstall if needed
+npm uninstall -g @devmukesh/mcp-server
+npm install -g @devmukesh/mcp-server
+```
+
+#### Server Connection Issues
+```bash
+# Check if server is running
+curl http://localhost:3001/shadcn/components
+
+# Start server if needed (from source)
+cd packages/server && pnpm run dev
+```
+
+#### Permission Issues
+```bash
+# Use sudo if needed for global install
+sudo npm install -g @devmukesh/mcp-server
+
+# Or use npx to run without global install
+npx @devmukesh/mcp-server list shadcn
+```
+
+### Error Messages
+
+| Error | Solution |
+|-------|----------|
+| `command not found: mcp` | Install globally: `npm install -g @devmukesh/mcp-server` |
+| `ECONNREFUSED` | Start the server: `pnpm dev` |
+| `Module not found` | Run `pnpm install` in project root |
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how to get started:
+
+### Development Setup
+```bash
+git clone https://github.com/bishnoimukesh/mcp-server.git
+cd mcp-server
+pnpm install
+pnpm build
+```
+
+### Adding New Providers
+1. Create new provider in `packages/`
+2. Implement `MCPProvider` interface
+3. Add to server registry
+4. Update documentation
+5. Submit PR
+
+### Testing
+```bash
+# Test CLI
+node dist/cli.mjs list shadcn
+node dist/cli.mjs get shadcn button
+
+# Test API  
+curl http://localhost:3001/shadcn/components
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the ISC License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- [ShadCN UI](https://ui.shadcn.com/) - For the amazing component library
+- [Radix UI](https://www.radix-ui.com/) - For the foundational primitives
+- [Tailwind CSS](https://tailwindcss.com/) - For the styling system
+- [Next.js](https://nextjs.org/) - For the demo application framework
+
+---
+
+## 📞 Support
+
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/bishnoimukesh/mcp-server/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/bishnoimukesh/mcp-server/discussions)
+- 📧 **Email**: mukeshbishnoi@gmail.com
+
+---
+
+<div align="center">
+  
+**Made with ❤️ by [Mukesh Bishnoi](https://github.com/bishnoimukesh)**
+
+[⭐ Star this repo](https://github.com/bishnoimukesh/mcp-server) | [🐛 Report Bug](https://github.com/bishnoimukesh/mcp-server/issues) | [💡 Request Feature](https://github.com/bishnoimukesh/mcp-server/issues)
+
+</div>
     css?: string;
   };
   previewUrl?: string;
